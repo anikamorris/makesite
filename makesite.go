@@ -2,11 +2,17 @@ package main
 
 import (
 	"io/ioutil"
-	"fmt"
+	//"fmt"
+	"html/template"
+	"os"
 )
 
-func readFile() string {
-	fileContents, err := ioutil.ReadFile("first-post.txt")
+type content struct {
+	Description string
+}
+
+func readFile(name string) string {
+	fileContents, err := ioutil.ReadFile(name)
 	if err != nil {
 		panic(err)
 	}
@@ -14,10 +20,17 @@ func readFile() string {
 	return string(fileContents)
 }
 
-func renderTemplate() {
-	
+func renderTemplate(filename string, data string) {
+	c := content{Description: data}
+	t := template.Must(template.New("template.tmpl").ParseFiles(filename))
+
+	var err error
+	err = t.Execute(os.Stdout , c)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func main() {
-	fmt.Println(readFile())
+	renderTemplate("template.tmpl", readFile("first-post.txt"))
 }
