@@ -40,7 +40,7 @@ func addExtHTML(filename string) string {
 }
 
 func writeTemplateToFile(tmplName string, data string) {
-	c := content{Description: data}
+	c := content{Description: readFile(data)}
 	t := template.Must(template.New("template.tmpl").ParseFiles(tmplName))
 
 	file := addExtHTML(data)
