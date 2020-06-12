@@ -2,9 +2,11 @@ package main
 
 import (
 	"io/ioutil"
-	//"fmt"
+	// "fmt"
 	"html/template"
 	"os"
+	"flag"
+	"strings"
 )
 
 type content struct {
@@ -31,11 +33,18 @@ func renderTemplate(filename string, data string) {
 	}
 }
 
-func writeTemplateToFile(filename string, data string) {
-	c := content{Description: data}
-	t := template.Must(template.New("template.tmpl").ParseFiles(filename))
+func addExtHTML(filename string) string {
+	ext := ".html"
+	withExt := strings.Split(filename, ".")[0] + ext
+	return withExt
+}
 
-	f, err := os.Create("first-post.html")
+func writeTemplateToFile(tmplName string, data string) {
+	c := content{Description: data}
+	t := template.Must(template.New("template.tmpl").ParseFiles(tmplName))
+
+	file := addExtHTML(data)
+	f, err := os.Create(file)
 	if err != nil {
 		panic(err)
 	}
@@ -47,6 +56,13 @@ func writeTemplateToFile(filename string, data string) {
 }
 
 func main() {
-	renderTemplate("template.tmpl", readFile("first-post.txt"))
-	writeTemplateToFile("template.tmpl", readFile("first-post.txt"))
+	filePtr := flag.String("file", "", "txt file to be converted to html file")
+	flag.Parse()
+	if *filePtr != "" {
+		renderTemplate("template.tmpl", readFile(*filePtr))
+		writeTemplateToFile("template.tmpl", *filePtr)
+	} else {
+		renderTemplate("template.tmpl", readFile("test.txt"))
+		writeTemplateToFile("template.tmpl", "test.txt")
+	}
 }
