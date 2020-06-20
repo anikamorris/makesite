@@ -55,14 +55,38 @@ func writeTemplateToFile(tmplName string, data string) {
 	}
 }
 
+func isTxtFile(filename string) bool {
+	if strings.Contains(filename, ".") {
+		return strings.Split(filename, ".")[1] == "txt"
+	} else {
+		return false
+	}
+}
+
 func main() {
 	filePtr := flag.String("file", "", "txt file to be converted to html file")
+	dirPtr := flag.String("dir", "", "directory to search for txt files")
 	flag.Parse()
+	if *dirPtr != "" {
+		files, err := ioutil.ReadDir(*dirPtr)
+		if err != nil {
+			panic(err)
+		}
+		for _, f := range files {
+			name := f.Name()
+			if isTxtFile(name) == true {
+				renderTemplate("template.tmpl", readFile(name))
+				writeTemplateToFile("template.tmpl", name)
+			}		
+		}
+	}
+	
 	if *filePtr != "" {
 		renderTemplate("template.tmpl", readFile(*filePtr))
 		writeTemplateToFile("template.tmpl", *filePtr)
-	} else {
-		renderTemplate("template.tmpl", readFile("test.txt"))
-		writeTemplateToFile("template.tmpl", "test.txt")
 	}
+	// } else {
+	// 	renderTemplate("template.tmpl", readFile("test.txt"))
+	// 	writeTemplateToFile("template.tmpl", "test.txt")
+	// }
 }
