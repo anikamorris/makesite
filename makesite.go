@@ -2,11 +2,12 @@ package main
 
 import (
 	"io/ioutil"
-	// "fmt"
+	"fmt"
 	"html/template"
 	"os"
 	"flag"
 	"strings"
+	"github.com/fatih/color"
 )
 
 type content struct {
@@ -72,21 +73,22 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		var numFiles = 0
 		for _, f := range files {
 			name := f.Name()
 			if isTxtFile(name) == true {
 				renderTemplate("template.tmpl", readFile(name))
 				writeTemplateToFile("template.tmpl", name)
+				numFiles += 1
 			}		
 		}
+		green := color.New(color.Bold, color.FgGreen).SprintFunc()
+		bold := color.New(color.Bold).SprintFunc()
+		fmt.Printf("%v Created %v html files\n", green("Success!"), bold(numFiles))
 	}
 	
 	if *filePtr != "" {
 		renderTemplate("template.tmpl", readFile(*filePtr))
 		writeTemplateToFile("template.tmpl", *filePtr)
-	}
-	// } else {
-	// 	renderTemplate("template.tmpl", readFile("test.txt"))
-	// 	writeTemplateToFile("template.tmpl", "test.txt")
-	// }
+	} 
 }
